@@ -43,14 +43,14 @@ jobs:
 
       # Unityプロジェクトのビルド
       # 設定しない場合、buildフォルダに出力される
-      - name: Run the Max build
+      - name: Run the Mac build
         uses: game-ci/unity-builder@v4
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
-          targetPlatform: MacOS
+          targetPlatform: Mac
           unityVersion: 2022.3.10f1  #ここに使うUnityのバージョンを入れる
 
       # 成果物をZIPにしてアップロードする
