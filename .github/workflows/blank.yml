@@ -5,7 +5,7 @@ on:
 jobs:
   build:
     name: Run the Mac build
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     steps:
       # リポジトリのチェックアウト
       - name: Check out my unity project.
