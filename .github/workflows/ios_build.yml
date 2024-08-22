@@ -32,10 +32,9 @@ jobs:
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
-          projectPath: Unity
           targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Custom
-          version: 0.1.${{ github.run_number }} # ここでバージョンを入れておくと出来たROMとGitHubActionsの対応付けが出来て便利
+          version: 0.1.${{ github.run_number }}
 
       - uses: actions/upload-artifact@v2
         with:
