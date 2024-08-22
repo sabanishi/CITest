@@ -1,11 +1,13 @@
-name: iOS Build
+name: Development build
 
 on:
-  workflow_dispatch: {}
+  push:
+    branches:
+      - main
 
 jobs:
   build_unity:
-    name: Build ${{matrix.targetPlatform}}
+    name: Build ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -13,51 +15,51 @@ jobs:
       matrix:
         targetPlatform:
           - iOS
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
+
       - uses: actions/cache@v2
         with:
-        path: Unity/Library
-        key: Library-${{matrix.targetPlatform}}
-        restore-keys: |
-          Library-
-      
+          path: Unity/Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-
+
       - name: Build
         uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           projectPath: Unity
-          targetPlatform: ${{matrix.targetPlatform}}
+          targetPlatform: ${{ matrix.targetPlatform }}
           versioning: Custom
-          version: 0.1.${{github.run_number}}
-      
+          version: 0.1.${{ github.run_number }} # ここでバージョンを入れておくと出来たROMとGitHubActionsの対応付けが出来て便利
+
       - uses: actions/upload-artifact@v2
         with:
-          name: Build-${{matrix.targetPlatform}}
-          path: build/${{matrix.targetPlatform}}
-    
+          name: Build-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
+
   build_xcode:
-    name: Build Xcode Project
+    name: Build xcode project
     runs-on: macos-latest
     needs: build_unity
 
     env:
-      IOS_APP_ID: dev.sabanishi.test
-      IOS_BUILD_PATH: ${{format('{0}/build/iOS', github.workspace)}}
-      CERTIFICATES_PATH: ${{format('{0}/Certificates.p12',github.workspace)}}
-      MOBILEPROVISION_PATH: ${{format('{0}/Target.mobileprovision',github.workspace)}}
-      IPA_OUTPUT_PATH: ${{format('{0}/Buikd.ipa',github.workspace)}}
-      CODESIGNING_IDENTITY: ${{secrets.CODESIGNING_IDENTITY}}
-      CERTIFICATES_PASSWORD: ${{secrets.CERTIFICATES_PASSWORD}}
+      IOS_APP_ID: dev.kyubuns.test
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      CERTIFICATES_PATH: ${{ format('{0}/Certificates.p12', github.workspace) }}
+      MOBILEPROVISION_PATH: ${{ format('{0}/Target.mobileprovision', github.workspace) }}
+      IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
+      CODESIGNING_IDENTITY: ${{ secrets.CODESIGNING_IDENTITY }}
+      CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      
+
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
@@ -67,21 +69,21 @@ jobs:
       - name: Fix File Permissions
         run: |
           find $IOS_BUILD_PATH -type f -name "**.sh" -exec chmod +x {} \;
-      
+
       - uses: actions/cache@v2
         with:
           path: vendor/bundle
-          key: ${{runner.os}}-${{hashFiles('**/Gamefile.lock')}}
+          key: ${{ runner.os }}-${{ hashFiles('**/Gemfile.lock') }}
 
       - name: Write Key Files
         env:
-          CERTIFICATES_P12: ${{secrets.CERTIFICATES_P12}}
-          MOBILEPROVISION: ${{secrets.MOBILEPROVISION}}
+          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+          MOBILEPROVISION: ${{ secrets.MOBILEPROVISION }}
         run: |
-          echo $CERTIFICATES_P12 | base64 -d > $CERTIFICATES_PATH
-          echo $MOBILEPROVISION | base64 -d > $MOBILEPROVISION_PATH
-      
-      - name: Build XCode
+          echo "$CERTIFICATES_P12" | base64 --decode > $CERTIFICATES_PATH
+          echo "$MOBILEPROVISION" | base64 --decode > $MOBILEPROVISION_PATH
+
+      - name: Build Xcode
         uses: maierj/fastlane-action@v2.0.0
         with:
           lane: 'ios development'
@@ -89,14 +91,15 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Build-iOS-ipa
-          path: ${{env.IPA_OUTPUT_PATH}}
+          path: ${{ env.IPA_OUTPUT_PATH }}
 
       - name: Cleanup
         if: always()
-        uses: geekeggo/delete-artifact@v1
+        uses: geekyeggo/delete-artifact@v1
         with:
           name: Build-iOS
-  
+
+  # FastlaneでAppCenterにアップロードするところまで行っても良かったものの、macOSの稼働時間を減らすためにlinuxで行っている
   upload_appcenter:
     name: Upload ipa to AppCenter
     runs-on: ubuntu-latest
@@ -107,18 +110,17 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: Build-iOS-ipa
-      
+
       - name: Upload to App Center
-        uses: wzieba/AppCenter-GitHub-Action@v1
+        uses: wzieba/AppCenter-Github-Action@v1
         with:
-          appName: sabanishi/Test
-          token: ${{secrets.APPCENTER_API_TOKEN}}
+          appName: kyubuns/Test
+          token: ${{ secrets.APPCENTER_API_TOKEN }}
           file: Build.ipa
           group: Internal
-      
+
       - name: Cleanup
         if: always()
-        uses: geekeggo/delete-artifact@v1
+        uses: geekyeggo/delete-artifact@v1
         with:
           name: Build-iOS-ipa
-    
