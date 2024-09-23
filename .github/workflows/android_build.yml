@@ -49,7 +49,7 @@ jobs:
                -F "message=New build from GitHub Actions" \
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
           APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
-          APP_URL=$(echo $APP_URL | sed 's/\*\*\*/$DEPLOYGATE_USER_NAME')
+          APP_URL=$(echo "$APP_URL" | sed "s|\*\*\*|$DEPLOYGATE_USER_NAME|")
           echo "DeployGate App URL: $APP_URL"
           echo $RESPONSE
           echo "DeployGate App URL: $APP_URL"
