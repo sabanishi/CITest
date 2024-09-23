@@ -59,9 +59,9 @@ jobs:
           echo "DeployGate App URL: $APP_URL"
           # AUTHOR_NAMEが空でないかを確認し、メッセージを作成
           if [ -n "$AUTHOR_NAME" ]; then
-            MESSAGE="@$AUTHOR_NAME デプロイが完了しましたよ！\n$APP_URL"
+            MESSAGE="<@$AUTHOR_NAME> \nデプロイが完了しましたよ！\n$APP_URL"
           else
-            MESSAGE="デプロイが完了しました！\n$APP_URL"
+            MESSAGE="デプロイが完了しましたよ！\n$APP_URL"
           fi
           echo "Sending message: $MESSAGE"
 
