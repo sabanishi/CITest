@@ -30,6 +30,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
+          AUTHOR_NAME=${{ github.event.client_payload.name }}
           if [ -n "$AUTHOR_NAME" ]; then
             MESSAGE="<@$AUTHOR_NAME> \nデプロイを開始します！\n$APP_URL"
           else
