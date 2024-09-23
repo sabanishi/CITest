@@ -57,5 +57,5 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"デプロイが完了しましたよ！\nURL: $APP_URL\n\"}" \
+               -d "{\"content\": \"デプロイが完了しましたよ！\nURL: $APP_URL \"}" \
                $DISCORD_WEBHOOK_URL
