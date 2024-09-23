@@ -49,7 +49,7 @@ jobs:
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
           APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
           echo "Before URL: $APP_URL"
-          APP_URL=$(echo $APP_URL | sed "s|organizations/\*\*\*|organizations/$DEPLOYGATE_USER_NAME|g")
+          APP_URL="${APP_URL/\*\*\*/$DEPLOYGATE_USER_NAME}"
           echo "After URL: $APP_URL"
           echo $RESPONSE
 
@@ -58,7 +58,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          BODY = New Android build is available on DeployGate: $APP_URL
+          BODY=New Android build is available on DeployGate: $APP_URL
           echo $BODY
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"$BODY\"}" \
