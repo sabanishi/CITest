@@ -47,15 +47,19 @@ jobs:
                -F "token=$DEPLOYGATE_API_KEY" \
                -F "message=New build from GitHub Actions" \
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
-          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url' | sed "s/\*\*\*/$DEPLOYGATE_USER_NAME/g")
+          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
+          echo "Before URL: $APP_URL"
+          APP_URL=$(echo $APP_URL | sed "s|organizations/\*\*\*|organizations/$DEPLOYGATE_USER_NAME|g")
+          echo "After URL: $APP_URL"
           echo $RESPONSE
-          echo "DeployGate App URL: $APP_URL"
 
       - name: Send DeployGate link to Discord
         if: success()
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
+          BODY = New Android build is available on DeployGate: $APP_URL
+          echo $BODY
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"New Android build is available on DeployGate: $APP_URL\"}" \
+               -d "{\"content\": \"$BODY\"}" \
                $DISCORD_WEBHOOK_URL
