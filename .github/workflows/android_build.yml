@@ -30,12 +30,7 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          AUTHOR_NAME=${{ github.event.client_payload.name }}
-          if [ -n "$AUTHOR_NAME" ]; then
-            MESSAGE="<@$AUTHOR_NAME> \nデプロイを開始します！\n$APP_URL"
-          else
-            MESSAGE="デプロイが完了します！\n$APP_URL"
-          fi
+          MESSAGE="@here \nデプロイを開始します！"
           echo "Sending message: $MESSAGE"
 
           # Discordにメッセージを送信
@@ -73,12 +68,8 @@ jobs:
           echo "DeployGate App URL: $APP_URL"
           echo $RESPONSE
           echo "DeployGate App URL: $APP_URL"
-          # AUTHOR_NAMEが空でないかを確認し、メッセージを作成
-          if [ -n "$AUTHOR_NAME" ]; then
-            MESSAGE="<@$AUTHOR_NAME> \nデプロイが完了しましたよ！\n$APP_URL"
-          else
-            MESSAGE="デプロイが完了しましたよ！\n$APP_URL"
-          fi
+          
+          MESSAGE="デプロイが完了しましたよ！\n$APP_URL"
           echo "Sending message: $MESSAGE"
 
           # Discordにメッセージを送信
