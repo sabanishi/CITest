@@ -1,0 +1,49 @@
+name: Android Build
+
+#手動で実行する
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+
+      - name: Cache Library folder
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-$(hashFiles('**/Packages/manifest.json'))
+          restore-keys: |
+            Library-
+      
+      - name: Build for Android
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICESNE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: .
+          targetPlatform: Android
+          buildName: build
+          buildsPath: build
+
+      - name: Upload to DeployGate
+        env:
+          DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
+          DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+        run: |
+          APK_PATH=$(find build -name "*.apk" | head -n 1)
+          echo "Uploading" $APK_PATH to DeployGate
+          curl -F "file=@$APK_PATH" \
+              -F "token=$DEPLOYGATE_API_KEY" \
+              -F "distribution_key=$DEPLOYGATE_USER_NAME" \
+              https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps
