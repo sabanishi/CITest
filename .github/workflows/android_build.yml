@@ -1,7 +1,10 @@
 name: Android Build
 
 # 手動で実行する
-on: workflow_dispatch
+on:
+  workflow_dispatch
+  repository_dispatch:
+    types: [trigger-workflow]
 
 jobs:
   build:
