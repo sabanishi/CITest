@@ -40,6 +40,7 @@ jobs:
         env:
           DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
           DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           APK_PATH=$(find build -name "*.apk" | head -n 1)
           echo "Uploading $APK_PATH to DeployGate"
@@ -48,18 +49,10 @@ jobs:
                -F "message=New build from GitHub Actions" \
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
           APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
-          echo "Before URL: $APP_URL"
-          APP_URL="${APP_URL/\*\*\*/$DEPLOYGATE_USER_NAME}"
-          echo "After URL: $APP_URL"
+          APP_URL=$(echo $APP_URL | sed "s/\*\*\*/$DEPLOYGATE_USER_NAME|g")
+          echo "DeployGate App URL: $APP_URL"
           echo $RESPONSE
-
-      - name: Send DeployGate link to Discord
-        if: success()
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          BODY=New Android build is available on DeployGate: $APP_URL
-          echo $BODY
+          echo "DeployGate App URL: $APP_URL"
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"$BODY\"}" \
+               -d "{\"content\": \"New Android build is available on DeployGate: $APP_URL\"}" \
                $DISCORD_WEBHOOK_URL
