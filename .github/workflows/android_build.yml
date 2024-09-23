@@ -47,7 +47,7 @@ jobs:
                -F "token=$DEPLOYGATE_API_KEY" \
                -F "message=New build from GitHub Actions" \
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
-          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
+          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url' | sed "s/***/$DEPLOYGATE_USER_NAME/g")
           echo $RESPONSE
           echo "DeployGate App URL: $APP_URL"
 
@@ -57,5 +57,5 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"デプロイが完了しましたよ！\nURL: $APP_URL \"}" \
+               -d "{\"content\": \"New Android build is available on DeployGate: $APP_URL\"}" \
                $DISCORD_WEBHOOK_URL
