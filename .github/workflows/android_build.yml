@@ -26,6 +26,21 @@ jobs:
           key: Library-$(hashFiles('**/Packages/manifest.json'))
           restore-keys: |
             Library-
+      - name: Start Build
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$AUTHOR_NAME" ]; then
+            MESSAGE="<@$AUTHOR_NAME> \nデプロイを開始します！\n$APP_URL"
+          else
+            MESSAGE="デプロイが完了します！\n$APP_URL"
+          fi
+          echo "Sending message: $MESSAGE"
+
+          # Discordにメッセージを送信
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"$MESSAGE\"}" \
+               $DISCORD_WEBHOOK_URL
       
       - name: Build for Android
         uses: game-ci/unity-builder@v4
