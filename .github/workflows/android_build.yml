@@ -53,9 +53,19 @@ jobs:
                https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
           APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
           APP_URL=$(echo "$APP_URL" | sed "s|\*\*\*|$DEPLOYGATE_USER_NAME|")
+          AUTHOR_NAME=${{ github.event.client_payload.name }}
           echo "DeployGate App URL: $APP_URL"
           echo $RESPONSE
           echo "DeployGate App URL: $APP_URL"
+          # AUTHOR_NAMEが空でないかを確認し、メッセージを作成
+          if [ -n "$AUTHOR_NAME" ]; then
+            MESSAGE="@$AUTHOR_NAME デプロイが完了しましたよ！\n$APP_URL"
+          else
+            MESSAGE="デプロイが完了しました！\n$APP_URL"
+          fi
+          echo "Sending message: $MESSAGE"
+
+          # Discordにメッセージを送信
           curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"デプロイが完了しましたよ！\n$APP_URL\"}" \
+               -d "{\"content\": \"$MESSAGE\"}" \
                $DISCORD_WEBHOOK_URL
