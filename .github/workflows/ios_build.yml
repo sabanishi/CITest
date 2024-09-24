@@ -72,6 +72,20 @@ jobs:
           name: Build-iOS
           path: build/iOS
 
+      #手動でPodsフォルダを作成する
+      - name: Install CocoaPods
+        run: |
+          cd build/iOS/build
+          pod update
+    
+      - name: Cache Ruby Gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: bundle-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            bundle-
+
       - name: Cache restore cocoapods
         uses: actions/cache@v2
         if: ${{ always() }}
@@ -81,22 +95,6 @@ jobs:
             ~/.cocoapods/repos
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
-
-      #手動でPodsフォルダを作成する
-      - name: Install CocoaPods
-        run: |
-          cd build/iOS/build
-          ls -a
-          pod update
-          ls -a
-    
-      - name: Cache Ruby Gems
-        uses: actions/cache@v3
-        with:
-          path: vendor/bundle
-          key: bundle-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            bundle-
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -110,7 +108,7 @@ jobs:
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install  # ここでGemfileに基づいて依存関係をインストール
+          bundle install
 
       - name: Build XCode
         uses: maierj/fastlane-action@v3.1.0
