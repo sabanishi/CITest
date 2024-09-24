@@ -50,10 +50,6 @@ jobs:
     needs: build_unity
 
     env:
-      IOS_APP_ID: com.DefaultCompany.CISample
-      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
-      CERTIFICATES_PATH: ${{ format('{0}/Certificates.p12', github.workspace) }}
-      MOBILEPROVISION_PATH: ${{ format('{0}/Target.mobileprovision', github.workspace) }}
       IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
@@ -90,14 +86,14 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
+          ruby-version: 3.0
 
       - name: Prepare for fastlane # GateKeeper対策
         run: |
           sudo spctl --master-disable
 
       - name: Build XCode
-        uses: maierj/fastlane-action@v2.0.1
+        uses: maierj/fastlane-action@v3.1.0
         with:
           lane: 'ios build'
       
