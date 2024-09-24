@@ -88,9 +88,9 @@ jobs:
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
 
-      - uses: actions/setup-ruby@v1
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: 2.6
 
       - name: Prepare for fastlane # GateKeeper対策
         run: |
