@@ -63,16 +63,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: Build-iOS
-          path: build/iOS
-
-      - name: Fix File Permissions
-        run: |
-          find $IOS_BUILD_PATH type f -name "**.sh" -exec chmod +x {} \;
-
       - name: Cache Library folder
         uses: actions/cache@v3
         with:
@@ -81,7 +71,13 @@ jobs:
             build/iOS
           key: Library-iOS-
           restore-keys: Library-
-      
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-iOS
+          path: build/iOS
+
       - name: Cache restore cocoapods
         uses: actions/cache@v2
         if: ${{ always() }}
@@ -91,14 +87,6 @@ jobs:
             ~/.cocoapods/repos
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
-
-      - name: Write Key Files
-        env:
-          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
-          MOBILEPROVISION: ${{ secrets.MOBILEPROVISION }}
-        run: |
-          echo "$CERTIFICATES_P12" | base64 --decode > $CERTIFICATES_PATH
-          echo "$MOBILEPROVISION" | base64 --decode > $MOBILEPROVISION_PATH
 
       - uses: actions/setup-ruby@v1
         with:
