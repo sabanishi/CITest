@@ -20,7 +20,7 @@ platform :ios do
       clean: true,
       skip_profile_detection: true,
       codesigning_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
-      export_method: "appstore",
+      export_method: "app-store",
       export_options: {
         method: "app-store",
         provisioningProfiles: {
