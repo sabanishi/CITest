@@ -87,9 +87,8 @@ jobs:
         run: |
           cd build/iOS/build
           ls -a
-          pod init
-          pod install –repo-update
           pod update
+          ls -a
     
       - name: Cache Ruby Gems
         uses: actions/cache@v3
