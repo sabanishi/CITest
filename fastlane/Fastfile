@@ -22,7 +22,7 @@ platform :ios do
       codesigning_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
       export_method: "appstore",
       export_options: {
-        method: "appstore",
+        method: "app-store",
         provisioningProfiles: {
           ENV["IOS_APP_ID"] => "match AppStore_#{ENV['IOS_APP_ID']}"
         }
@@ -42,7 +42,7 @@ platform :ios do
       unlock: true
     )
     match(
-      type: "appstore",
+      type: "app-store",
       app_identifier: "#{ENV['IOS_APP_ID']}",
       readonly: true,
       keychain_name: keychain_name,
