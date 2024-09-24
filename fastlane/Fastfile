@@ -3,7 +3,7 @@ keychain_password = SecureRandom.base64
 
 platform :ios do
 
-  desc "Create .ipa"
+  desc "Create Development .ipa"
   lane :build do
     cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/build/Podfile")
     disable_automatic_code_signing(path: "#{ENV['IOS_BUILD_PATH']}/build/Unity-iPhone.xcodeproj")
@@ -11,27 +11,26 @@ platform :ios do
     update_project_provisioning(
       xcodeproj: "#{ENV['IOS_BUILD_PATH']}/build/Unity-iPhone.xcodeproj",
       target_filter: "Unity-iPhone",
-      profile: ENV["sigh_#{ENV['IOS_APP_ID']}_appstore_profile-path"], # より動的にみるようにしています
-      code_signing_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})"
+      profile: ENV["sigh_#{ENV['IOS_APP_ID']}_development_profile-path"], # Developmentプロファイルに変更
+      code_signing_identity: "Apple Development"
     )
     gym(
       workspace: "#{ENV['IOS_BUILD_PATH']}/build/Unity-iPhone.xcworkspace",
       scheme: "Unity-iPhone",
       clean: true,
-      #clean: false,
       skip_profile_detection: true,
-      codesigning_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
-      export_method: "app-store",
+      codesigning_identity: "Apple Development",
+      export_method: "development", # developmentビルド用に設定
       export_options: {
-        method: "app-store",
+        method: "development",
         provisioningProfiles: {
-          ENV["IOS_APP_ID"] => "match AppStore #{ENV['IOS_APP_ID']}"
+          ENV["IOS_APP_ID"] => "match Development #{ENV['IOS_APP_ID']}" # Developmentプロファイルに変更
         }
       }
     )
   end
 
-  desc "Synchronize certificates"
+  desc "Synchronize development certificates"
   lane :certificates do
     cleanup_keychain
     create_keychain(
@@ -43,8 +42,8 @@ platform :ios do
       unlock: true
     )
     match(
-      type: "development",
-      app_identifier: "com.DefaultCompan.CISample",
+      type: "development",  # Development用に変更
+      app_identifier: "#{ENV['IOS_APP_ID']}",
       readonly: true,
       keychain_name: keychain_name,
       keychain_password: keychain_password
