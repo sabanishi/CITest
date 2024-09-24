@@ -1,4 +1,4 @@
-git_url("https://github.com/iosのcertificateおいてるgitリポジトリ") # sshのurlではなく、httpsで指定してます。
+git_url("https://github.com/CoilSiteInc/certificates.git") # sshのurlではなく、httpsで指定してます。
 git_basic_authorization(Base64.strict_encode64("#{ENV['MATCH_REPOSITORY_ACCOUNT']}:#{ENV['MATCH_PERSONAL_ACCESS_TOKEN']}"))
 storage_mode("git")
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
