@@ -5,7 +5,7 @@ platform :ios do
 
   desc "Create .ipa"
   lane :build do
-    cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/iOS/Podfile")
+    cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/build/Podfile")
     disable_automatic_code_signing(path: "#{ENV['IOS_BUILD_PATH']}/iOS/Unity-iPhone.xcodeproj")
     certificates
     update_project_provisioning(
