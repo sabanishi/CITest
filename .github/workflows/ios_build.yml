@@ -85,7 +85,7 @@ jobs:
       #手動でPodsフォルダを作成する
       - name: Install CocoaPods
         run: |
-          cd build/iOS
+          cd build/iOS/build
           ls -a
           pod init
           pod install –repo-update
