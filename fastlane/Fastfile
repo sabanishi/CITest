@@ -42,7 +42,7 @@ platform :ios do
       unlock: true
     )
     match(
-      type: "app-store",
+      type: "appstore",
       app_identifier: "#{ENV['IOS_APP_ID']}",
       readonly: true,
       keychain_name: keychain_name,
