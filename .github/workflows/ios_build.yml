@@ -81,6 +81,11 @@ jobs:
             ~/.cocoapods/repos
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
+
+      - name: Install CocoaPods
+        run: |
+          cd build/iOS
+          pod install
     
       - name: Cache Ruby Gems
         uses: actions/cache@v3
