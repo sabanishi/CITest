@@ -84,7 +84,7 @@ jobs:
       
       - name: Cache restore cocoapods
         uses: actions/cache@v2
-        if: {{ always() }}
+        if: ${{ always() }}
         with:
           path: |
             build/iOS/iOS/Pods
