@@ -86,6 +86,7 @@ jobs:
       - name: Install CocoaPods
         run: |
           cd build/iOS
+          ls -a
           pod init
           pod install –repo-update
           pod update
