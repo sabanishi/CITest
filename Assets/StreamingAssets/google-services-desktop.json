@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "667522566722",
+    "project_id": "citest-1a76a",
+    "storage_bucket": "citest-1a76a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667522566722:android:94b9523153a298c1137bdb",
+        "android_client_info": {
+          "package_name": "com.DefaultCompan.CISample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtqcnESyZCikcoz_SsUNib-ytrR12QxfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
