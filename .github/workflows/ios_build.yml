@@ -82,10 +82,13 @@ jobs:
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
 
+      #手動でPodsフォルダを作成する
       - name: Install CocoaPods
         run: |
           cd build/iOS
-          pod install
+          pod init
+          pod install –repo-update
+          pod update
     
       - name: Cache Ruby Gems
         uses: actions/cache@v3
