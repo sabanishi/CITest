@@ -43,7 +43,7 @@ platform :ios do
     )
     match(
       type: "appstore",
-      app_identifier: "${ENV['IOS_APP_ID']}",
+      app_identifier: "#{ENV['IOS_APP_ID']}",
       readonly: true,
       keychain_name: keychain_name,
       keychain_password: keychain_password
