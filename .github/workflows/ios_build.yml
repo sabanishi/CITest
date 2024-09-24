@@ -50,6 +50,7 @@ jobs:
     needs: build_unity
 
     env:
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
       IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
