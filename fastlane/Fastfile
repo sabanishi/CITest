@@ -43,7 +43,8 @@ platform :ios do
       unlock: true
     )
     match(
-      type: "appstore",
+      type: "development",
+      app_identifier: "com.DefaultCompan.CISample",
       readonly: true,
       keychain_name: keychain_name,
       keychain_password: keychain_password
