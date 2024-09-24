@@ -136,6 +136,7 @@ jobs:
     needs: build_xcode
 
     env:
+      IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
       DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
       DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -145,6 +146,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Build-iOS-ipa
+          path: ${{ env.IPA_OUTPUT_PATH }}
 
       - name: Upload to DeployGate
         run: |
