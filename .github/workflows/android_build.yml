@@ -68,8 +68,8 @@ jobs:
           echo "DeployGate App URL: $APP_URL"
           echo $RESPONSE
           echo "DeployGate App URL: $APP_URL"
-          
-          MESSAGE="デプロイが完了しましたよ！\n$APP_URL"
+
+          MESSAGE="@here \nデプロイが完了しましたよ！\n$APP_URL"
           echo "Sending message: $MESSAGE"
 
           # Discordにメッセージを送信
