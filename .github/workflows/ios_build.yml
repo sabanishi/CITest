@@ -152,12 +152,12 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: build
+          name: Build-iOS-ipa
           path: ${{ env.IPA_OUTPUT_PATH }}
 
       - name: Upload to DeployGate
         run: |
-          IPA_PATH=$(find build -name "*.ipa" | head -n 1)
+          IPA_PATH=$(find Build-iOS-ipa -name "*.ipa" | head -n 1)
           echo "Uploading $IPA_PATH to DeployGate"
           RESPONSE=$(curl -s -F "file=@$IPA_PATH" \
                -F "token=$DEPLOYGATE_API_KEY" \
