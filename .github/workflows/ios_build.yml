@@ -152,7 +152,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: Build-iOS-ipa
+          name: build
           path: ${{ env.IPA_OUTPUT_PATH }}
 
       - name: Upload to DeployGate
