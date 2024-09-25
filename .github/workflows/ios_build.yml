@@ -136,6 +136,7 @@ jobs:
     needs: build_xcode
 
     env:
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
       IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
       DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
       DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
