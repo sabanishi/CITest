@@ -122,6 +122,7 @@ jobs:
         uses: maierj/fastlane-action@v3.1.0
         with:
           lane: 'ios build'
+          export_method: development
       
       - name: Upload to Artifact
         uses: actions/upload-artifact@v4
