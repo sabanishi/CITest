@@ -19,7 +19,7 @@ jobs:
         run: |
           UNITY_APP_PATH="/Applications/Unity/Hub/Editor/2022.3.38f1/Unity.app/Contents/MacOS/Unity"
           UNITY_PROJECT_PATH="./"
-          UNITY_BUILDE_NAME="Builder.iOSBuild"
+          UNITY_BUILDE_NAME="BuildScript.BuildForIOS"
           UNITY_LOG_PATH="./build/iOS/build.log"
           PROJECT_DIR="./build/iOS"
 
