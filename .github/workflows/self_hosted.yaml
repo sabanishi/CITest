@@ -36,7 +36,6 @@ jobs:
           fi
 
           echo "unity build success!!"
-          PROJECT_DIR=$PROJECT_DIR sh xcodeBuild.sh
   
   build_xcode:
     name: Build XCode Project
