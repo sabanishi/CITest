@@ -1,0 +1,184 @@
+name: iOS Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_unity:
+    name: Build iOS
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Remove unnecessary files
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/ios
+          sudo rm -rf /opt/ghc
+
+      - name: Cache Library folder
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-$(hashFiles('**/Packages/manifest.json'))
+          restore-keys: |
+            Library-
+      
+      - name: Build iOS
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: .
+          targetPlatform: iOS
+          buildName: build
+          buildsPath: build
+
+      - name: Upload to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-iOS
+          path: build/iOS
+  
+  build_xcode:
+    name: Build XCode Project
+    runs-on: self-hosted
+    needs: build_unity
+
+    env:
+      IOS_APP_ID: com.DefaultCompan.CISample
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
+      MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
+      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache Library folder
+        uses: actions/cache@v3
+        with:
+          path: |
+            Library
+            build/iOS
+          key: Library-iOS-
+          restore-keys: Library-
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-iOS
+          path: build/iOS
+
+      # 手動でPodsフォルダを作成する
+      - name: Install CocoaPods
+        run: |
+          cd build/iOS/build
+          pod update
+    
+      - name: Cache Ruby Gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: bundle-${{ hashFiles('Gemfile.lock') }}
+          restore-keys: |
+            bundle-
+
+      - name: Cache restore cocoapods
+        uses: actions/cache@v2
+        if: ${{ always() }}
+        with:
+          path: |
+            build/iOS/iOS/Pods
+            ~/.cocoapods/repos
+          key: Pods-${{ hashFiles('**/Podfile') }}
+          restore-keys: Pods-
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+
+      - name: Prepare for fastlane # GateKeeper対策
+        run: |
+          sudo spctl --master-disable
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Fetch UDID from DeployGate
+        run: |
+          curl -s -H "Authorization: token ${{ secrets.DEPLOYGATE_API_KEY }}" \
+            https://deploygate.com/api/users/${{ secrets.DEPLOYGATE_USER_NAME }}/devices \
+            | jq '.results[] | "\(.udid),\(.name)"' > devices.txt
+
+      - name: Build XCode
+        uses: maierj/fastlane-action@v3.1.0
+        with:
+          lane: 'ios build'
+      
+      - name: Upload to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-iOS-ipa
+          path: |
+            ${{ github.workspace }}/*.ipa
+            ${{ github.workspace }}/*.dSYM.zip
+
+      - name: Cleanup
+        if: always()
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: Build-iOS
+  
+  upload_to_deploygate:
+    name: Upload to DeployGate
+    runs-on: self-hosted
+    needs: build_xcode
+
+    env:
+      IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
+      DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
+      DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+    
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-iOS-ipa
+          path: .
+
+      - name: Upload to DeployGate
+        run: |
+          IPA_PATH=$(find . -name "*.ipa" | head -n 1)
+          echo "Uploading $IPA_PATH to DeployGate"
+          RESPONSE=$(curl -s -F "file=@$IPA_PATH" \
+               -F "token=$DEPLOYGATE_API_KEY" \
+               -F "message=New build from GitHub Actions" \
+               https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
+          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
+          APP_URL=$(echo "$APP_URL" | sed "s|\*\*\*|$DEPLOYGATE_USER_NAME|")
+          AUTHOR_NAME=${{ github.event.client_payload.name }}
+          echo "DeployGate App URL: $APP_URL"
+          echo $RESPONSE
+          echo "DeployGate App URL: $APP_URL"
+          
+          MESSAGE="@here \nデプロイが完了しましたよ！\n$APP_URL"
+          echo "Sending message to Discord: $MESSAGE"
+
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"$MESSAGE\"}" \
+               $DISCORD_WEBHOOK_URL
