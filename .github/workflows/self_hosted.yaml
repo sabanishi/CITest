@@ -67,47 +67,15 @@ jobs:
           key: Pods-${{ hashFiles('**/Podfile') }}
           restore-keys: Pods-
 
-      - name: Prepare for fastlane # GateKeeper対策
-        run: |
-          sudo spctl --master-disable
-
       - name: Install dependencies
         run: |
           gem install bundler
           bundle install
 
-      - name: Fetch UDID from DeployGate
-        run: |
-          curl -s -H "Authorization: token ${{ secrets.DEPLOYGATE_API_KEY }}" \
-            https://deploygate.com/api/users/${{ secrets.DEPLOYGATE_USER_NAME }}/devices \
-            | jq '.results[] | "\(.udid),\(.name)"' > devices.txt
-
       - name: Build XCode
         uses: maierj/fastlane-action@v3.1.0
         with:
           lane: 'ios build'
-  
-      - name: Upload to DeployGate
-        run: |
-          IPA_PATH=$(find . -name "*.ipa" | head -n 1)
-          echo "Uploading $IPA_PATH to DeployGate"
-          RESPONSE=$(curl -s -F "file=@$IPA_PATH" \
-               -F "token=$DEPLOYGATE_API_KEY" \
-               -F "message=New build from GitHub Actions" \
-               https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
-          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
-          APP_URL=$(echo "$APP_URL" | sed "s|\*\*\*|$DEPLOYGATE_USER_NAME|")
-          AUTHOR_NAME=${{ github.event.client_payload.name }}
-          echo "DeployGate App URL: $APP_URL"
-          echo $RESPONSE
-          echo "DeployGate App URL: $APP_URL"
-          
-          MESSAGE="@here \nデプロイが完了しましたよ！\n$APP_URL"
-          echo "Sending message to Discord: $MESSAGE"
-
-          curl -H "Content-Type: application/json" \
-               -d "{\"content\": \"$MESSAGE\"}" \
-               $DISCORD_WEBHOOK_URL
 
       - name: Cleanup
         if: always()
