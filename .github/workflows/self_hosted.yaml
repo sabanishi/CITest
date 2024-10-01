@@ -7,6 +7,18 @@ jobs:
   build_unity:
     name: Build iOS
     runs-on: self-hosted
+    env:
+      IOS_APP_ID: com.DefaultCompan.CISample
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
+      MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
+      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
+      DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
+      DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
     
     steps:
       - name: Checkout repository
@@ -36,31 +48,7 @@ jobs:
           fi
 
           echo "unity build success!!"
-  
-  build_xcode:
-    name: Build XCode Project
-    runs-on: self-hosted
-    needs: build_unity
 
-    env:
-      IOS_APP_ID: com.DefaultCompan.CISample
-      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
-      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-      MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
-      MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
-      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-    
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # 手動でPodsフォルダを作成する
-      - name: Install CocoaPods
-        run: |
-          cd build/iOS/build
-          pod update
-    
       - name: Cache Ruby Gems
         uses: actions/cache@v3
         with:
@@ -103,25 +91,7 @@ jobs:
         uses: maierj/fastlane-action@v3.1.0
         with:
           lane: 'ios build'
-
-      - name: Cleanup
-        if: always()
-        uses: geekyeggo/delete-artifact@v1
-        with:
-          name: Build-iOS
   
-  upload_to_deploygate:
-    name: Upload to DeployGate
-    runs-on: self-hosted
-    needs: build_xcode
-
-    env:
-      IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
-      DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
-      DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
-      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-    
-    steps:
       - name: Upload to DeployGate
         run: |
           IPA_PATH=$(find . -name "*.ipa" | head -n 1)
@@ -143,3 +113,9 @@ jobs:
           curl -H "Content-Type: application/json" \
                -d "{\"content\": \"$MESSAGE\"}" \
                $DISCORD_WEBHOOK_URL
+
+      - name: Cleanup
+        if: always()
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: Build-iOS
