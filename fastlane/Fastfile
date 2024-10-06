@@ -20,10 +20,10 @@ platform :ios do
     certificates
     # Unity-iPhoneターゲットの署名設定を手動署名に設定
     update_code_signing_settings(
-      use_automatic_signing: false,
+      use_automatic_signing: true,
       team_id: ENV['APPLE_TEAM_ID'],
-      code_sign_identity: "CoilSite Inc.(Distribution)",
-      profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
+      #code_sign_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
+      #profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
       path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
       targets: ["Unity-iPhone"],
       build_configurations: ["Release", "Debug"]
