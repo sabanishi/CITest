@@ -24,14 +24,21 @@ platform :ios do
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
       path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
-      targets: ["Unity-iPhone"]
+      targets: ["Unity-iPhone", "UnityFramework", "GameAssembly"],
     )
     gym(
       workspace: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcworkspace",
       scheme: "Unity-iPhone",
       clean: true,
       export_method: "app-store",
-      export_team_id: ENV['APPLE_TEAM_ID']
+      export_team_id: ENV['APPLE_TEAM_ID'],
+      export_options: {
+        provisioningProfiles: {
+          "#{ENV['IOS_APP_ID']}" => "match AppStore #{ENV['IOS_APP_ID']}"
+        },
+        signingStyle: "manual",
+        teamID: ENV['APPLE_TEAM_ID']
+      }
     )
   end
 
