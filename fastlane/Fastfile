@@ -17,6 +17,7 @@ platform :ios do
 
   desc "Create .ipa"
   lane :build do
+    cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/Podfile")
     certificates
     # Unity-iPhoneターゲットの署名設定を手動署名に設定
     update_code_signing_settings(
