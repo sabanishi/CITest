@@ -18,14 +18,17 @@ platform :ios do
   desc "Create .ipa"
   lane :build do
     certificates
+    # Unity-iPhoneターゲットの署名設定を手動署名に設定
     update_code_signing_settings(
       use_automatic_signing: false,
       team_id: ENV['APPLE_TEAM_ID'],
-      code_sign_identity: "Apple Distribution",
+      code_sign_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
       profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
       path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
-      targets: ["Unity-iPhone", "UnityFramework", "GameAssembly"],
+      targets: ["Unity-iPhone"],
+      build_configurations: ["Release", "Debug"]
     )
+
     gym(
       workspace: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcworkspace",
       scheme: "Unity-iPhone",
