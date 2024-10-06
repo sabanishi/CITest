@@ -23,7 +23,7 @@ platform :ios do
       team_id: ENV['APPLE_TEAM_ID'],
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
-      xcodeproj: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
+      path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
       targets: ["Unity-iPhone"]
     )
     gym(
