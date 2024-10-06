@@ -23,7 +23,8 @@ platform :ios do
       scheme: "Unity-iPhone",
       clean: true,
       skip_profile_detection: true,
-      export_method: "app-store"
+      export_method: "app-store",
+      export_team_id: ENV['APPLE_TEAM_ID']
     )
   end
 
