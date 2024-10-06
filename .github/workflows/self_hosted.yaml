@@ -8,16 +8,23 @@ jobs:
     name: Build iOS
     runs-on: self-hosted
     env:
-      IOS_APP_ID: com.DefaultCompan.CISample
-      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
+      APPLE_CONNECT_EMAIL: ${{ secrets.APPLE_CONNECT_EMAIL }}
+      APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
+      APPLE_ITC_TEAM_ID: ${{ secrets.APPLE_ITC_TEAM_ID }}
+      FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+      FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
+      IOS_APP_ID: com.DefaultCompan.CISample
+      IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
       MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
-      APPLE_TEAM_NAME: ${{ secrets.APPLE_TEAM_NAME }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
-      DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
-      DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+      USYM_UPLOAD_AUTH_TOKEN: 'fake'
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
     
     steps:
@@ -76,6 +83,11 @@ jobs:
         uses: maierj/fastlane-action@v3.1.0
         with:
           lane: 'ios build'
+
+      - name: Upload to the App Store
+        uses: maierj/fastlane-action@v1.4.0
+        with:
+          lane: 'ios release'
 
       - name: Cleanup
         if: always()
