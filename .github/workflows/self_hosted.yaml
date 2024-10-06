@@ -20,7 +20,7 @@ jobs:
       ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
       MATCH_PERSONAL_ACCESS_TOKEN: ${{ secrets.MATCH_PERSONAL_ACCESS_TOKEN }}
-      IOS_APP_ID: com.DefaultCompan.CISample
+      IOS_APP_ID: com.DefaulCompan.CISample
       IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
       MATCH_REPOSITORY_ACCOUNT: ${{ secrets.MATCH_REPOSITORY_ACCOUNT }}
       IPA_OUTPUT_PATH: ${{ format('{0}/Build.ipa', github.workspace) }}
