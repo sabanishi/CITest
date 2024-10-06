@@ -49,8 +49,9 @@ platform :ios do
   lane :certificates do
     match(
       type: "appstore",
-      readonly: true,
-      team_id: ENV['APPLE_TEAM_ID']
+      team_id: ENV['APPLE_TEAM_ID'],
+      app_identifier: ENV['IOS_APP_ID'],
+      force: true
     )
   end
 end
