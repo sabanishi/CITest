@@ -29,14 +29,10 @@ platform :ios do
 
   desc "Synchronize certificates"
   lane :certificates do
-    # Skip keychain management for local Mac usage
     match(
       type: "appstore",
-      readonly: true
+      readonly: true,
+      team_id: ENV['APPLE_TEAM_ID']
     )
-  end
-
-  after_all do
-    # Skip keychain cleanup as well
   end
 end
