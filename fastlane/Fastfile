@@ -25,7 +25,7 @@ platform :ios do
       code_signing_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})"
     )
     gym(
-      workspace: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcworkspace",
+      workspace: "#{ENV['IOS_BUILD_PATH']}/iOS/Unity-iPhone.xcworkspace",
       scheme: "Unity-iPhone",
       clean: true,
       skip_profile_detection: true,
