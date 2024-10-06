@@ -22,7 +22,7 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       team_id: ENV['APPLE_TEAM_ID'],
-      code_sign_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
+      code_sign_identity: "CoilSite Inc.(Distribution)",
       profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
       path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
       targets: ["Unity-iPhone"],
