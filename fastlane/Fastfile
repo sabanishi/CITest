@@ -17,10 +17,27 @@ platform :ios do
 
   desc "Create .ipa"
   lane :build do
-    cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/Podfile")
+    cocoapods(
+      podfile: "#{ENV['IOS_BUILD_PATH']}/Podfile",
+      post_install: lambda do |installer|
+        installer.pods_project.targets.each do |target|
+          target.build_configurations.each do |config|
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+          end
+        end
+      end
+      )
     disable_automatic_code_signing(path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj")
 
     certificates
+
+    update_xcodeproj(
+    path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
+    target: 'Unity-iPhone',
+    build_settings: {
+      'IPHONEOS_DEPLOYMENT_TARGET' => '15.0'
+    }
+  )
 
     update_project_provisioning(
       xcodeproj: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
