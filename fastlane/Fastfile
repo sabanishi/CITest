@@ -19,16 +19,6 @@ platform :ios do
   lane :build do
     cocoapods(podfile: "#{ENV['IOS_BUILD_PATH']}/Podfile")
     certificates
-    # Unity-iPhoneターゲットの署名設定を手動署名に設定
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      team_id: ENV['APPLE_TEAM_ID'],
-      #code_sign_identity: "Apple Distribution: #{ENV['APPLE_TEAM_NAME']} (#{ENV['APPLE_TEAM_ID']})",
-      #profile_name: "match AppStore #{ENV['IOS_APP_ID']}",
-      path: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcodeproj",
-      targets: ["Unity-iPhone"],
-      build_configurations: ["Release", "Debug"]
-    )
 
     gym(
       workspace: "#{ENV['IOS_BUILD_PATH']}/Unity-iPhone.xcworkspace",
@@ -42,7 +32,8 @@ platform :ios do
         },
         signingStyle: "manual",
         teamID: ENV['APPLE_TEAM_ID']
-      }
+      },
+      output_name: "build.ipa",
     )
   end
 
