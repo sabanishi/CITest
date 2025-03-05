@@ -28,7 +28,7 @@ jobs:
               -projectPath $UNITY_PROJECT_PATH \
               -executeMethod $UNITY_BUILDE_NAME \
               -logfile $UNITY_LOG_PATH \
-              -output-path $PROJECT_PATH
+              -output-path $OUTPUT_PATH
 
           if [ $? -eq 1 ]; then
               echo "error!! check logfile: ${UNITY_LOG_PATH}"
