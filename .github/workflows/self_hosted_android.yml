@@ -8,8 +8,6 @@ jobs:
     name: Build iOS
     runs-on: self-hosted
     steps:
-      - name: Setup LFS
-        run: apt-get update && apt-get install git-lfs
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
