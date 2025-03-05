@@ -5,9 +5,11 @@ on:
 
 jobs:
   build_unity:
-    name: Build iOS
+    name: Build Android
     runs-on: self-hosted
     steps:
+      - name: Check LFS
+        run: git lfs version
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
