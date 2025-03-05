@@ -5,6 +5,36 @@ using UnityEngine;
 
 public class BuildScript
 {
+    public static void BuildForAndroid()
+    {
+        var outputDirKey = "-output-dir";
+
+        var paths = GetBuildScenePaths();
+        var outputDir = GetParameterFrom(key: outputDirKey);
+        var buildTarget = BuildTarget.Android;
+        var buildOptions = BuildOptions.Development;
+
+        Debug.Assert(!string.IsNullOrEmpty(outputDir), $"'{outputDirKey}'の取得に失敗しました");
+
+        var buildReport = BuildPipeline.BuildPlayer(
+            paths.ToArray(),
+            outputDir,
+            buildTarget,
+            buildOptions
+        );
+
+        var summary = buildReport.summary;
+
+        if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+        {
+            Debug.Log("Success");
+        }
+        else
+        {
+            Debug.LogError("Error");
+        }
+    }
+
     public static void BuildForIOS()
     {
         var outputDirKey = "-output-dir";

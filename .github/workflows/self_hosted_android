@@ -1,0 +1,36 @@
+name: Android Build(Self Hosted)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_unity:
+    name: Build iOS
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Build Android
+        run: |
+          UNITY_APP_PATH="/Applications/Unity/Hub/Editor/2022.3.38f1/Unity.app/Contents/MacOS/Unity"
+          UNITY_PROJECT_PATH="./"
+          UNITY_BUILDE_NAME="BuildScript.BuildForAndroid"
+          UNITY_LOG_PATH="./build/iOS/build.log"
+          PROJECT_DIR="./build/Android"
+
+          $UNITY_APP_PATH -batchmode \
+              -quit \
+              -projectPath $UNITY_PROJECT_PATH \
+              -executeMethod $UNITY_BUILDE_NAME \
+              -logfile $UNITY_LOG_PATH \
+              -output-dir $PROJECT_DIR
+
+          if [ $? -eq 1 ]; then
+              echo "error!! check logfile: ${UNITY_LOG_PATH}"
+              exit 1
+          fi
+
+          echo "unity build success!!"
