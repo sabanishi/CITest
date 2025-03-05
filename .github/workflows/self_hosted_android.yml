@@ -8,13 +8,12 @@ jobs:
     name: Build Android
     runs-on: self-hosted
     steps:
-      - name: Check LFS
-        run: git lfs version
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
+          clean: false
       - name: Build Android
         run: |
           UNITY_APP_PATH="/Applications/Unity/Hub/Editor/2022.3.38f1/Unity.app/Contents/MacOS/Unity"
