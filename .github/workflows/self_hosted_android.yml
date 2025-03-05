@@ -20,19 +20,46 @@ jobs:
           UNITY_APP_PATH="/Applications/Unity/Hub/Editor/2022.3.38f1/Unity.app/Contents/MacOS/Unity"
           UNITY_PROJECT_PATH="./"
           UNITY_BUILDE_NAME="BuildScript.BuildForAndroid"
-          UNITY_LOG_PATH="./build/iOS/build.log"
-          PROJECT_DIR="./build/Android"
+          UNITY_LOG_PATH="./build/android_build.log"
+          OUTPUT_PATH="./build/android_build.apk"
 
           $UNITY_APP_PATH -batchmode \
               -quit \
               -projectPath $UNITY_PROJECT_PATH \
               -executeMethod $UNITY_BUILDE_NAME \
               -logfile $UNITY_LOG_PATH \
-              -output-dir $PROJECT_DIR
+              -output-path $PROJECT_PATH
 
           if [ $? -eq 1 ]; then
               echo "error!! check logfile: ${UNITY_LOG_PATH}"
               exit 1
           fi
+      - name: Upload DeployGate
+        env:
+          DEPLOYGATE_API_KEY: ${{ secrets.DEPLOYGATE_API_KEY }}
+          DEPLOYGATE_USER_NAME: ${{ secrets.DEPLOYGATE_USER_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          APK_PATH=$(find build -name "*.apk" | head -n 1)
+          echo "Uploading $APK_PATH to DeployGate"
+          RESPONSE=$(curl -s -F "file=@$APK_PATH" \
+               -F "token=$DEPLOYGATE_API_KEY" \
+               -F "message=New build from GitHub Actions" \
+               https://deploygate.com/api/users/$DEPLOYGATE_USER_NAME/apps)
+          APP_URL=$(echo $RESPONSE | jq -r '.results.revision_url')
+          APP_URL=$(echo "$APP_URL" | sed "s|\*\*\*|$DEPLOYGATE_USER_NAME|")
+          AUTHOR_NAME=${{ github.event.client_payload.name }}
+          echo "DeployGate App URL: $APP_URL"
+          echo $RESPONSE
+          echo "DeployGate App URL: $APP_URL"
+
+          MESSAGE="@here \nデプロイが完了しましたよ！\n$APP_URL"
+          echo "Sending message: $MESSAGE"
+
+          # Discordにメッセージを送信
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"$MESSAGE\"}" \
+               $DISCORD_WEBHOOK_URL
+        
 
           echo "unity build success!!"

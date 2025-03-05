@@ -7,18 +7,18 @@ public class BuildScript
 {
     public static void BuildForAndroid()
     {
-        var outputDirKey = "-output-dir";
+        var outputPathKey = "-output-path";
 
         var paths = GetBuildScenePaths();
-        var outputDir = GetParameterFrom(key: outputDirKey);
+        var outputPath = GetParameterFrom(key: outputPathKey);
         var buildTarget = BuildTarget.Android;
         var buildOptions = BuildOptions.Development;
 
-        Debug.Assert(!string.IsNullOrEmpty(outputDir), $"'{outputDirKey}'の取得に失敗しました");
+        Debug.Assert(!string.IsNullOrEmpty(outputPath), $"'{outputPathKey}'の取得に失敗しました");
 
         var buildReport = BuildPipeline.BuildPlayer(
             paths.ToArray(),
-            outputDir,
+            outputPath,
             buildTarget,
             buildOptions
         );
